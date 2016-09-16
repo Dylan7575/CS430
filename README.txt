@@ -1,0 +1,1 @@
+This application is used for reading and writing from p3 to p6 and p6 to p3 and it doesnt work

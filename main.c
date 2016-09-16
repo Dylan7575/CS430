@@ -5,13 +5,18 @@
 void p6_to_p3(FILE*);
 void p3_to_p6(FILE*);
 void parse_white_space(FILE*);
+int get_number(FILE* fp);
+
+typedef struct Pixel {
+    unsigned char r, g, b;
+} Pixel;
 
 int main() {
     FILE * fp ;
-    fp= fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\smile.ppm","r");
+    fp= fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\boxes_1.ppm","rb");
     //opening file
     if (fp==NULL){
-        perror("That file does not exist");
+        fprintf(stderr,"That file does not exist");
         exit(-1);
         //error checking file opening
     }
@@ -28,7 +33,7 @@ int main() {
             //error checking file reading
         }
         if(header[0]=='P'&&header[1]=='6'){
-           // printf("req");
+           //printf("req");
             p6_to_p3(fp);
             //if p6 sending it to function for converting to p3
         }
@@ -38,7 +43,7 @@ int main() {
             //if p3 sending it to function for converting to p6
         }
         else{
-            perror("Your file is not a PPM file");
+            fprintf(stderr,"This is not a ppm File");
             //if it is not a PPM file giving user an error message
         }
 
@@ -53,40 +58,64 @@ int main() {
 }
 
 void p6_to_p3(FILE * fp){
-    int *width,*height;
+    int width,height,temp,max,temp2,i=0;
 
-    if(fgetc(fp)=='#'){
-        printf("req");
-        while(fgetc(fp)!=' '){
-            fseek(fp,1,SEEK_CUR);
-        }
+
+    if(fgetc(fp)=='#') {
+        do temp = fgetc(fp); while (temp != '\n');
     }
-    parse_white_space(fp);
+
+    fscanf(fp,"%i ",&height);
+    fscanf(fp,"%i ",&width);
+    fscanf(fp,"%i ",&max);
+    if(max>255){
+        fprintf(stderr,"This converter does no accept a max val of more than 255");
+    }
+
+    int buffer_size =width*height* sizeof(int);
+    //printf("%i",width*height* sizeof(int));
+
+
+    unsigned char buffer[width*height* sizeof(int)];
+    int f =ftell(fp);
+    fseek(fp,-f,SEEK_CUR);
+
+
+    //printf("%c",*header);
+    FILE* output=fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\output.ppm","w+");
+    int header[f];
+    fread(header, 1, f,fp);
+    fwrite(header,1, f,output);
+
+
+    //printf("%i",buffer_size);
+    fread(buffer,1,buffer_size,fp);
+    fwrite(buffer,1,buffer_size,output);
+    //fprintf(output,"%c",buffer[0]);
+    fclose(output);
 
 
 
-    //int temp = fgetc(fp);
-    //printf("%c",temp);
-
-
-
-
-
-
-    //nothing yet
 }
 
 void p3_to_p6(FILE * fp){
+    Pixel pix;
     int width,height,temp,max,temp2,i=0;
     parse_white_space(fp);
-    int* temp3;
-    do temp=fgetc(fp);while(temp!='\n');
+
+    if(fgetc(fp)=='#') {
+        do temp = fgetc(fp); while (temp != '\n');
+    }
     //int* temp2=get_num(fp);
     fscanf(fp,"%i ",&height);
     fscanf(fp,"%i ",&width);
     fscanf(fp,"%i ",&max);
-    printf("%i",height*width);
-    int buffer[width*height*10];
+    if(max>255){
+        fprintf(stderr,"This converter does no accept a max val of more than 255");
+    }
+
+    //printf("%i",max);
+    char buffer[width*height];
 
 
     int f =ftell(fp);
@@ -96,21 +125,16 @@ void p3_to_p6(FILE * fp){
     //printf("%c",*header);
     FILE* output=fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\output.ppm","w+");
     fwrite(header,1, f,output);
-    fclose(output);
-    //fgets(buffer,(height*width)-f,fp);
-    //fread(buffer,1,width*height,fp);
+
+    //int u =0;
+    //pix.r=fgetc(fp);
+    //buffer[0]=pix.r;
     //atoi(buffer);
-   // fwrite(buffer,1,width*height,output);
+   //fwrite(buffer,1,1,output);
 
-
-/*
-    do{
-        temp2=fgetc(fp);
-        buffer[i++]=temp2;
-
-    } while(temp2!=' ');
-    fwrite(buffer,1,width*height,output);
-    */
+    get_number(fp);
+    parse_white_space(fp);
+    printf("%c",fgetc(fp));
 
 
 
@@ -118,41 +142,17 @@ void p3_to_p6(FILE * fp){
 
 
 
+    //fwrite(buffer,1,height*width,output);
 
 
+    fclose(output);
 
+}
+int get_number(FILE* fp){
+    int number;
+    fscanf(fp,"%i",&number);
 
-
-    //
-
-
-    //fseek(fp,0,SEEK_END);
- //   int a = ftell(fp);
-  //  printf("%i",a);
-   // fsetpos(fp,f);
-   // fread(buffer,1,a-f,fp);
-   // fwrite(buffer,1,a-f,output);
-
-
-
-
-    //fseek(output,1,SEEK_SET);
-    //fwrite("6",1,1,output);
-
-
-    // *buffer=fgetc(fp);
-    //temp2 =fgetc(fp);
- //   printf("%c %i",header[2], f);
-
-
-
-
-
-
-
-
-
-
+    return number;
 }
 void parse_white_space(FILE *fp){
     while (fgetc(fp)==' '){
