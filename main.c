@@ -13,7 +13,7 @@ typedef struct Pixel {
 
 int main() {
     FILE * fp ;
-    fp= fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\boxes_1.ppm","rb");
+    fp= fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\smile.ppm","r");
     //opening file
     if (fp==NULL){
         fprintf(stderr,"That file does not exist");
@@ -85,6 +85,7 @@ void p6_to_p3(FILE * fp){
     FILE* output=fopen("C:\\Users\\Dylan\\ClionProjects\\project1CS430\\output.ppm","w+");
     int header[f];
     fread(header, 1, f,fp);
+
     fwrite(header,1, f,output);
 
 
@@ -99,7 +100,7 @@ void p6_to_p3(FILE * fp){
 }
 
 void p3_to_p6(FILE * fp){
-    Pixel pix;
+
     int width,height,temp,max,temp2,i=0;
     parse_white_space(fp);
 
@@ -113,9 +114,11 @@ void p3_to_p6(FILE * fp){
     if(max>255){
         fprintf(stderr,"This converter does no accept a max val of more than 255");
     }
+    Pixel pix[height*width];
 
     //printf("%i",max);
     char buffer[width*height];
+    int buffer2[width*height];
 
 
     int f =ftell(fp);
@@ -132,26 +135,33 @@ void p3_to_p6(FILE * fp){
     //atoi(buffer);
    //fwrite(buffer,1,1,output);
 
-    get_number(fp);
-    parse_white_space(fp);
-    printf("%c",fgetc(fp));
+    while((temp=fgetc(fp))!=EOF){
+        fseek(fp,-1,SEEK_CUR);
+        buffer[i]=temp;
+        /*pix[i].r=get_number(fp);
+        parse_white_space(fp);
+        pix[i].g=get_number(fp);
+        parse_white_space(fp);
+        pix[i].b=get_number(fp);
+        parse_white_space(fp);
+         */
+        i++;
+    }
+    buffer2[0] = atoi(buffer);
+    printf("%i",pix[2].r);
+    buffer[0]=pix[0].r;
+    fwrite(buffer2,1,1,output);
 
-
-
-
-
+    //get_number(fp);
 
 
     //fwrite(buffer,1,height*width,output);
-
-
     fclose(output);
 
 }
 int get_number(FILE* fp){
     int number;
     fscanf(fp,"%i",&number);
-
     return number;
 }
 void parse_white_space(FILE *fp){
